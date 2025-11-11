@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: var(--neon-green);
+  --color-brand-secondary: var(--neon-teal);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-background-dark: var(--dark-bg);
+  --color-surface-dark: var(--dark-surface);
+  --color-dark-green: var(--dark-green);
+  
+  --animation-glow: glow 2s ease-in-out infinite alternate;
+
+  @keyframes glow {
+    from {
+      text-shadow: 0 0 5px var(--neon-green), 0 0 10px var(--neon-green);
+    }
+    to {
+      text-shadow: 0 0 20px var(--neon-teal), 0 0 30px var(--neon-teal);
+    }
+  }
+}
+
+@layer base {
+  
+  :root {
+    --neon-green: #39FF14;
+    --dark-green: #008f11;
+    --neon-teal: #00CED1;
+    
+    --dark-bg: #0A0A0A;
+    --dark-surface: #1A1A1A;
+
+    --text-primary: #E0E0E0;
+    --text-secondary: #A0A0A0;
+    --text-green-glow: rgba(57, 255, 20, 0.9);
+
+    --shadow-neon-soft: rgba(57, 255, 20, 0.3);
+    --shadow-neon-medium: rgba(57, 255, 20, 0.5);
+    --shadow-neon-strong: rgba(57, 255, 20, 0.8);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background-dark text-text-primary;
+    min-height: 100vh;
+  }
+}
