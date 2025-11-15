@@ -25,6 +25,7 @@ export default function TrackLane({ track }: { track: Track }) {
   return (
     <div
       ref={setNodeRef}
+      data-track-id={track.id}
       className="relative grow h-16 border-b border-brand-primary/10 bg-background-dark/30"
       style={{ width: `${TOTAL_SECONDS * PIXELS_PER_SECOND}px` }}
     >

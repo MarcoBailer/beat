@@ -26,7 +26,24 @@ export default function DraggableAudioClip({ clip }: { clip: TimelineClip }) {
       style={style}
       {...listeners}
       {...attributes}
-      className="absolute top-1 h-14 bg-brand-primary/80 border-2 border-brand-primary rounded-md cursor-grab active:cursor-grabbing active:shadow-neon-medium overflow-hidden"
+      className="absolute top-1 h-14 bg-brand-primary/80 border-2 border-brand-primary rounded-md cursor-grab active:cursor-grabbing active:shadow-neon-medium overflow-hidden touch-none"
+    >
+      <span className="p-1 text-xs text-background-dark font-bold truncate">
+        {clip.name}
+      </span>
+    </div>
+  );
+}
+
+export function DraggableAudioClipPreview({ clip }: { clip: TimelineClip }) {
+  const style = {
+    width: `${clip.duration * PIXELS_PER_SECOND}px`,
+  };
+
+  return (
+    <div
+      style={style}
+      className="h-14 bg-brand-primary/80 border-2 border-brand-primary rounded-md cursor-grabbing shadow-neon-medium overflow-hidden opacity-75"
     >
       <span className="p-1 text-xs text-background-dark font-bold truncate">
         {clip.name}

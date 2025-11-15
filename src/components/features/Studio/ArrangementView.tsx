@@ -10,7 +10,10 @@ export default function ArrangementView() {
 
   return (
     <div className="grow h-full bg-surface-dark border border-brand-primary/20 rounded-lg overflow-hidden">
-      <div className="w-full overflow-x-auto">
+      <div 
+        id="arrangement-scroll-container" 
+        className="w-full overflow-x-auto"
+      >
         
         <TimelineRuler />
 
