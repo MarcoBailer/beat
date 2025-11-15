@@ -13,7 +13,6 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { restrictToWindowEdges } from '@dnd-kit/modifiers';
 import { useState } from 'react';
 import { useStudioStore, LibrarySound, TimelineClip } from '@/libs/studioStore';
 import SoundLibrary, { SoundLibrarySoundPreview } from './SoundLibrary'; 
