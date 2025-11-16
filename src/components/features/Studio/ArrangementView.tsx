@@ -35,9 +35,10 @@ export default function ArrangementView() {
         </div>
       </div>
 
-      <div 
-        id="arrangement-scroll-container" 
-        className="w-full overflow-x-auto relative"
+      <div
+        id="arrangement-scroll-container"
+        className="w-full relative overflow-x-auto overflow-y-auto overscroll-contain isolate"
+        style={{ maxHeight: '70vh' }}
       >
         <div
           className="pointer-events-none absolute top-8 bottom-0 z-20"
@@ -50,8 +51,8 @@ export default function ArrangementView() {
 
         <div className="flex flex-col">
           {tracks.map((track) => (
-            <div key={track.id} className="flex">
-              <div className="shrink-0 w-48 p-2 border-r border-b border-brand-primary/10">
+            <div key={track.id} className="flex border-b border-brand-primary/10">
+              <div className="sticky left-0 z-20 w-48 p-2 border-r border-brand-primary/10 bg-background-dark">
                 <span className="text-sm text-text-secondary">{track.name}</span>
               </div>
               <TrackLane track={track} />

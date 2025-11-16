@@ -1,19 +1,23 @@
 'use client';
 
 import React from 'react';
+import { useStudioStore } from '@/libs/studioStore';
 
-const TOTAL_SECONDS = 60; 
 const PIXELS_PER_SECOND = 100;
+const LABEL_WIDTH_REM = 12;
 
 export default function TimelineRuler() {
-  const totalWidth = TOTAL_SECONDS * PIXELS_PER_SECOND;
-  
+  const timelineSeconds = useStudioStore((s) => s.timelineSeconds) ?? 0;
+  const totalWidth = timelineSeconds * PIXELS_PER_SECOND;
+
   return (
-    <div className="sticky top-0 z-10 flex bg-background-dark border-b-2 border-brand-primary/30" style={{ width: `calc(${totalWidth}px + 12rem)` }}>
-      <div className="w-48 h-8 shrink-0 border-r border-brand-primary/10" /> 
-      
+    <div
+      className="sticky top-0 z-10 flex bg-background-dark border-b-2 border-brand-primary/30"
+      style={{ width: `calc(${totalWidth}px + ${LABEL_WIDTH_REM}rem)` }}
+    >
+      <div className="w-48 h-8 shrink-0 border-r border-brand-primary/10" />
       <div className="relative h-8" style={{ width: `${totalWidth}px` }}>
-        {Array.from({ length: TOTAL_SECONDS }).map((_, sec) => (
+        {Array.from({ length: Math.ceil(timelineSeconds) }).map((_, sec) => (
           <div
             key={sec}
             className="absolute top-0 h-full border-l border-text-secondary/30"

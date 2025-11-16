@@ -45,6 +45,9 @@ export interface StudioTransportState {
   schedulerId: number | null;
   lookaheadSec: number;
 
+  timelineSeconds?: number;
+  ensureTimelineCapacity: (minSeconds: number) => void;
+
   setPlayhead: (sec: number) => void;
   initAudio: () => Promise<void>;
   play: () => Promise<void>;
@@ -94,11 +97,7 @@ export const useStudioStore = create<StudioStore>((set, get) => ({
     { id: 'sound_snare', name: 'Snare.wav', url: '/sounds/drums/virtual-drum_sounds_snare.wav', duration: 1.0 },
     { id: 'sound_hat', name: 'Hihat.wav', url: '/sounds/drums/virtual-drum_sounds_hihat.wav', duration: 0.5 },
   ],
-  clips: [
-    { id: 'clip_1', soundId: 'sound_kick', trackId: 'track_1', startTime: 0, duration: 1.5, name: 'Kick 808.wav' },
-    { id: 'clip_2', soundId: 'sound_snare', trackId: 'track_2', startTime: 1, duration: 1.0, name: 'Snare.wav' },
-    { id: 'clip_3', soundId: 'sound_kick', trackId: 'track_1', startTime: 2, duration: 1.5, name: 'Kick 808.wav' },
-  ],
+  clips: [],
 
   isPlaying: false,
   playheadSec: 0,
@@ -109,6 +108,17 @@ export const useStudioStore = create<StudioStore>((set, get) => ({
   scheduled: new Set<string>(),
   schedulerId: null,
   lookaheadSec: 0.25,
+
+  timelineSeconds: 0.25,
+
+  ensureTimelineCapacity: (minSeconds: number) => {
+    const chunk = 8;
+    set((state) => {
+      const target = Math.max(state.timelineSeconds || 0, minSeconds);
+      const next = Math.ceil(target / chunk) * chunk;
+      return next !== state.timelineSeconds ? { timelineSeconds: next } : state;
+    });
+  },
 
   setPlayhead: (sec: number) => set({ playheadSec: Math.max(0, sec) }),
 
@@ -248,14 +258,35 @@ export const useStudioStore = create<StudioStore>((set, get) => ({
     })),
 
   addClip: (clip: Omit<TimelineClip, 'id'>) =>
-    set((state: StudioStore) => ({
-      clips: [...state.clips, { id: nanoid(10), ...clip }],
-    })),
+    set((state: StudioStore) => {
+      const newClips = [...state.clips, { id: nanoid(10), ...clip }];
+      const endSec = clip.startTime + clip.duration;
+      const margin = 2;
+      const min = endSec + margin;
+      if (min > (state.timelineSeconds || 0)) {
+        const chunk = 8;
+        const next = Math.ceil(min / chunk) * chunk;
+        return { clips: newClips, timelineSeconds: next };
+      }
+      return { clips: newClips };
+    }),
 
   moveClip: (clipId: string, newTrackId: string, newStartTime: number) =>
-    set((state: StudioStore) => ({
-      clips: state.clips.map((clip) =>
+    set((state: StudioStore) => {
+      const newClips = state.clips.map((clip) =>
         clip.id === clipId ? { ...clip, trackId: newTrackId, startTime: newStartTime } : clip
-      ),
-    })),
+      );
+      const moved = newClips.find((c) => c.id === clipId);
+      if (moved) {
+        const endSec = moved.startTime + moved.duration;
+        const margin = 2;
+        const min = endSec + margin;
+        if (min > (state.timelineSeconds || 0)) {
+          const chunk = 8;
+          const next = Math.ceil(min / chunk) * chunk;
+          return { clips: newClips, timelineSeconds: next };
+        }
+      }
+      return { clips: newClips };
+    }),
 }));

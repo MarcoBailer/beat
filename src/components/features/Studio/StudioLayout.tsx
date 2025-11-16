@@ -14,7 +14,7 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { useState } from 'react';
-import { useStudioStore, LibrarySound, TimelineClip } from '@/libs/studioStore';
+import { useStudioStore } from '@/libs/studioStore';
 import SoundLibrary, { SoundLibrarySoundPreview } from './SoundLibrary'; 
 import ArrangementView from './ArrangementView';
 import { DraggableAudioClipPreview } from './DraggableAudioClip'; 
@@ -27,6 +27,8 @@ export default function StudioLayout() {
   const [initialClipStartTime, setInitialClipStartTime] = useState<number>(0);
   const [draggedOverTrackId, setDraggedOverTrackId] = useState<string | null>(null);
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
+  const timelineSeconds = useStudioStore((s) => s.timelineSeconds);
+  const ensureTimelineCapacity = useStudioStore((s) => s.ensureTimelineCapacity);
 
   const PIXELS_PER_SECOND = 100;
 
@@ -81,10 +83,8 @@ export default function StudioLayout() {
       if (!trackElement) return;
 
       const trackRect = trackElement.getBoundingClientRect();
-
       const initialLeft = event.active.rect.current.initial?.left ?? 0;
       const currentLeft = initialLeft + (event.delta?.x || 0);
-
       const xOnTrack = (currentLeft - trackRect.left) + scrollLeft;
       newStartTime = xOnTrack / PIXELS_PER_SECOND;
     } else {
@@ -92,6 +92,20 @@ export default function StudioLayout() {
     }
 
     newStartTime = Math.round(newStartTime * 4) / 4;
+
+    const duration = activeDragData?.isClip
+      ? activeDragData.clip.duration
+      : activeDragData?.isSound
+      ? activeDragData.sound.duration
+      : 0;
+
+    const endSec = Math.max(0, newStartTime) + (duration || 0);
+    const margin = 2;
+    
+    if (timelineSeconds === undefined || endSec + margin > timelineSeconds) {
+      ensureTimelineCapacity(endSec + margin);
+    }
+
     setCalculatedStartTime(Math.max(0, newStartTime));
   }
   
